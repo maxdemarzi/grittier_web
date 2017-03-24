@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Grittier Home</title>
+    <style type="text/css">
+        body { background-color: #f5f8fa; margin: 0 0 0 20px; max-width:1200px; line-height:1.6;
+            font-size:18px; color:#444;
+             }
+        h1,h2,h3{line-height:1.2}
+        .column-left{ float: left; width: 25%; }
+        .column-right{ float: right; width: 25%; }
+        .column-center{ display: inline-block; width: 50%; }
+        .profile { background: white; border: 1px solid rgba(0, 0, 0, .2); margin-right: 10px;  padding: 3px;}
+        .profile img { position:relative; float:left; padding-right: 3px; }
+        a {color: #1DA1F2; text-decoration: none !important; }
+        .small { font-size:x-small; display: inline;}
+    </style>
+        </head>
+<body>
+<div class="container">
+    <h1>Gritter</h1>
+</div>
+<div class="container">
+    <div class="column-center">
+        <form action="/post" method="post">
+            <textarea name="status" maxlength="140"  rows="2" cols="70" placeholder="What's happening?" autofocus></textarea>
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+    <div class="column-left">
+        <div class="profile">
+            <img src="https://www.gravatar.com/avatar/{{user.hash}}?s=72&d=retro"/>
+            {{user.name}} <br>
+            <a href="/posts" style="font-size:small;">@{{user.username}}</a><br>
+            <table width="100%">
+                <tr>
+                    <td><a href="/posts" style="font-size:x-small;">Posts</a></td>
+                    <td><a href="/following" style="font-size:x-small;">Following</a></td>
+                    <td><a href="/followers" style="font-size:x-small;">Followers</a></td>
+                </tr>
+                <tr>
+                    <td><a href="/posts">{{user.posts}}</a></td>
+                    <td><a href="/following">{{user.following}}</a></td>
+                    <td><a href="/followers">{{user.followers}}</a></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="column-right">Column right</div>
+</div>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+<script src="/assets/grittier.js"></script>
+</body>
+</html>
