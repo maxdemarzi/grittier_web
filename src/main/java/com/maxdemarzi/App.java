@@ -1,7 +1,11 @@
 package com.maxdemarzi;
 
+import com.github.jknack.handlebars.Helper;
+import com.github.jknack.handlebars.HumanizeHelper;
 import com.maxdemarzi.models.Post;
 import com.maxdemarzi.models.User;
+import humanize.Humanize;
+import humanize.emoji.EmojiApi;
 import okhttp3.Credentials;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -20,6 +24,9 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 /**
@@ -38,7 +45,20 @@ public class App extends Jooby {
       }));
 
       // Setup Template Engine
-      use(new Hbs("/templates", ".html"));
+      use(new Hbs("/templates", ".html")
+              .doWith(hbs -> {
+                  HumanizeHelper.register(hbs);
+                  hbs.registerHelper("humanTime",
+                          (Helper<Long>) (context, options) -> Humanize.naturalTime(new Date(context * 1000)));
+
+                  EmojiApi.configure().assetsURL("http://localhost/assets/");
+                  hbs.registerHelper("emoji",
+                          (Helper<String>) (context, options) -> EmojiApi.replaceUnicodeWithImages("0x" + context));
+                                  //EmojiApi.imageTagByUnicode("❤"));
+
+                  //EmojiApi.byHexCode(context).getSources());
+              })
+      );
 
       // Setup Service
       onStart(registry -> {
@@ -74,13 +94,11 @@ public class App extends Jooby {
           user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
           Response<User> response = service.createUser(user).execute();
           if (response.isSuccessful()) {
-              Results.html("login");
+              Results.redirect("/login");
           } else {
               throw new Err(Status.CONFLICT, "User already registered.");
           }
       });
-
-
 
       use(new Auth().form("*", ServiceAuthenticator.class));
 
@@ -98,10 +116,26 @@ public class App extends Jooby {
       });
 
       get("/home", req -> {
-          Response<User> response = service.getProfile(req.get("username")).execute();
-          if (response.isSuccessful()) {
-              User user = response.body();
-              return Results.html("home").put("user", user);
+          Response<User> userResponse = service.getProfile(req.get("username")).execute();
+          if (userResponse.isSuccessful()) {
+              User user = userResponse.body();
+
+              Response<List<Post>> timelineResponse = service.getTimeline(req.get("username")).execute();
+              List<Post> posts = new ArrayList<>();
+              if (timelineResponse.isSuccessful()) {
+                  posts = timelineResponse.body();
+              }
+
+              Response<List<User>> recommendationsResponse = service.recommendFollows(req.get("username")).execute();
+              List<User> recommendations = new ArrayList<>();
+              if(recommendationsResponse.isSuccessful()) {
+                  recommendations = recommendationsResponse.body();
+              }
+
+              return Results.html("home")
+                      .put("user", user)
+                      .put("posts", posts)
+                      .put("recommendations", recommendations);
           } else {
               throw new Err(Status.BAD_REQUEST);
           }
