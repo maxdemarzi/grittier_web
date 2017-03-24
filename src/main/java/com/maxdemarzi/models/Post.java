@@ -10,6 +10,7 @@ public class Post {
     private String status;
     private String name;
     private String username;
+    private String hash;
     private Long time;
     private String human_time;
     private Integer likes;

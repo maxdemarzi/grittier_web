@@ -1,0 +1,24 @@
+body { background-color: #f5f8fa; margin: 0 0 0 20px; max-width:1200px; line-height:1.6;
+    font-size:18px; color:#444;
+}
+h1,h2,h3{line-height:1.2}
+.column-left{ float: left; width: 25%; }
+.column-right{ float: right; width: 25%; }
+.column-center{ display: inline-block; width: 50%; }
+.column-center-and-right{ float: right; width: 75%; }
+.box { background: white; border: 1px solid rgba(0, 0, 0, .2); margin-right: 10px; margin-top: -1px; padding: 3px;}
+.box img { position:relative; float:left; padding-right: 3px; }
+.post img {float: none;}
+a {color: #1DA1F2; text-decoration: none !important; }
+input[type=submit] {
+    border: 1px solid #f44c0e;
+    color: #fff;
+    background: tomato;
+    padding: 10px 20px;
+    float: right;
+    margin-right: 10px;
+}
+input[type=submit]:hover {
+    background: #f44c0e;
+}
+.small { font-size:x-small; }

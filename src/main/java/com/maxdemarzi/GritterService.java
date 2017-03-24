@@ -24,7 +24,7 @@ public interface GritterService {
     @GET("users/{username}/followers")
     Call<List<User>> getFollowers(@Path("username") String username);
 
-    @GET("users/{username}/followers")
+    @GET("users/{username}/following")
     Call<List<User>> getFollowing(@Path("username") String username);
 
     @POST("users/{username}/follows/{username2}")
