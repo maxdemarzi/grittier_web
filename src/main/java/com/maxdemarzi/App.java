@@ -87,7 +87,7 @@ public class App extends Jooby {
       assets("/assets/**");
       assets("/favicon.ico", "/assets/favicon.ico");
 
-      get("/", () -> "Hello World!");
+      get("/", () -> Results.html("index"));
       get("/register", () -> Results.html("register"));
       post("/register", (req, rsp) -> {
           User user = req.form(User.class);
