@@ -1,0 +1,65 @@
+@import java.util.List
+@import com.maxdemarzi.models.User
+@import com.maxdemarzi.models.Post
+
+@args (User user, List<User> users)
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Grittier Home</title>
+    <link rel="stylesheet" href="/assets/grittier.css">
+</head>
+<body>
+<div class="container">
+    <a href="/"><h1>Gritter</h1></a>
+</div>
+<div class="container">
+    <div class="column-center-and-right">
+        <div class="users">
+            @for (it: users) {
+            <div class="box">
+                <img src="https://www.gravatar.com/avatar/@it.getHash()?s=72&d=retro"/>
+                @it.getName() <br>
+                <a href="/@it.getUsername()/posts" style="font-size:small;">@@ @it.getUsername()</a><br>
+                <table width="100%">
+                    <tr>
+                        <td><span class="small"><a href="/@it.getUsername()/posts">Posts</a></span></td>
+                        <td><span class="small"><a href="/@it.getUsername()/following">Following</a></span></td>
+                        <td><span class="small"><a href="/@it.getUsername()/followers">Followers</a></span></td>
+                    </tr>
+                    <tr>
+                        <td><a href="/@it.getUsername()/posts">@it.getPosts()</a></td>
+                        <td><a href="/@it.getUsername()/following">@it.getFollowing()</a></td>
+                        <td><a href="/@it.getUsername()/followers">@it.getFollowers()</a></td>
+                    </tr>
+                </table>
+            </div>
+           }
+        </div>
+    </div>
+    <div class="column-left">
+        <div class="box">
+            <img src="https://www.gravatar.com/avatar/@user.getHash()?s=72&d=retro"/>
+            @user.getName() <br>
+            <a href="/@user.getUsername()/posts" style="font-size:small;">@@ @user.getUsername()</a><br>
+            <table width="100%">
+                <tr>
+                    <td><span class="small"><a href="/@user.getUsername()/posts">Posts</a></span></td>
+                    <td><span class="small"><a href="/@user.getUsername()/following">Following</a></span></td>
+                    <td><span class="small"><a href="/@user.getUsername()/followers">Followers</a></span></td>
+                </tr>
+                <tr>
+                    <td><a href="/@user.getUsername()/posts">@user.getPosts()</a></td>
+                    <td><a href="/@user.getUsername()/following">@user.getFollowing()</a></td>
+                    <td><a href="/@user.getUsername()/followers">@user.getFollowers()</a></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+<script src="/assets/grittier.js"></script>
+</body>
+</html>

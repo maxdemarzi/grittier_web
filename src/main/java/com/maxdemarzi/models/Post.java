@@ -18,9 +18,7 @@ public class Post {
     private String reposter_name;
     private String reposter_username;
 
-    public void setTime(Long time) {
-        this.time = time;
-        human_time = Humanize.naturalTime(new Date(time * 1000));
+    public String humanTime() {
+        return Humanize.naturalTime(new Date(time * 1000));
     }
-
 }

@@ -1,11 +1,7 @@
 package com.maxdemarzi;
 
-import com.github.jknack.handlebars.Helper;
-import com.github.jknack.handlebars.HumanizeHelper;
 import com.maxdemarzi.models.Post;
 import com.maxdemarzi.models.User;
-import humanize.Humanize;
-import humanize.emoji.EmojiApi;
 import okhttp3.Credentials;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -14,18 +10,21 @@ import org.jooby.Err;
 import org.jooby.Jooby;
 import org.jooby.Results;
 import org.jooby.Status;
-import org.jooby.hbs.Hbs;
 import org.jooby.json.Jackson;
 import org.jooby.pac4j.Auth;
+import org.jooby.rocker.Rockerby;
 import org.jooby.whoops.Whoops;
 import org.mindrot.jbcrypt.BCrypt;
 import org.pac4j.core.profile.UserProfile;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
+import views.index;
+import views.privacy;
+import views.register;
+import views.terms;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -45,20 +44,7 @@ public class App extends Jooby {
       }));
 
       // Setup Template Engine
-      use(new Hbs("/templates", ".html")
-              .doWith(hbs -> {
-                  HumanizeHelper.register(hbs);
-                  hbs.registerHelper("humanTime",
-                          (Helper<Long>) (context, options) -> Humanize.naturalTime(new Date(context * 1000)));
-
-                  EmojiApi.configure().assetsURL("http://localhost/assets/");
-                  hbs.registerHelper("emoji",
-                          (Helper<String>) (context, options) -> EmojiApi.replaceUnicodeWithImages("0x" + context));
-                                  //EmojiApi.imageTagByUnicode("❤"));
-
-                  //EmojiApi.byHexCode(context).getSources());
-              })
-      );
+      use(new Rockerby());
 
       // Setup Service
       onStart(registry -> {
@@ -87,8 +73,10 @@ public class App extends Jooby {
       assets("/assets/**");
       assets("/favicon.ico", "/assets/favicon.ico");
 
-      get("/", () -> Results.html("index"));
-      get("/register", () -> Results.html("register"));
+      get("/", index::template);
+      get("/privacy", privacy::template);
+      get("/terms", terms::template);
+      get("/register", register::template);
       post("/register", (req, rsp) -> {
           User user = req.form(User.class);
           user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
@@ -110,9 +98,7 @@ public class App extends Jooby {
               if (timelineResponse.isSuccessful()) {
                   posts = timelineResponse.body();
               }
-              return Results.html("home")
-                      .put("user", user)
-                      .put("posts", posts);
+              return views.home.template(user, posts, new ArrayList<User>());
           } else {
               throw new Err(Status.BAD_REQUEST);
           }
@@ -128,9 +114,7 @@ public class App extends Jooby {
               if (usersResponse.isSuccessful()) {
                   users = usersResponse.body();
               }
-              return Results.html("users")
-                      .put("user", user)
-                      .put("users", users);
+              return  views.users.template(user, users);
           } else {
               throw new Err(Status.BAD_REQUEST);
           }
@@ -146,9 +130,7 @@ public class App extends Jooby {
               if (usersResponse.isSuccessful()) {
                   users = usersResponse.body();
               }
-              return Results.html("users")
-                      .put("user", user)
-                      .put("users", users);
+              return views.users.template(user, users);
           } else {
               throw new Err(Status.BAD_REQUEST);
           }
@@ -186,10 +168,7 @@ public class App extends Jooby {
                   recommendations = recommendationsResponse.body();
               }
 
-              return Results.html("home")
-                      .put("user", user)
-                      .put("posts", posts)
-                      .put("recommendations", recommendations);
+              return views.home.template(user, posts, recommendations);
           } else {
               throw new Err(Status.BAD_REQUEST);
           }
