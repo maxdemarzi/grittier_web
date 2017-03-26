@@ -88,23 +88,7 @@ public class App extends Jooby {
           }
       });
 
-      get("/{username}/posts/", req -> {
-          Response<User> userResponse = service.getProfile(req.param("username").value()).execute();
-          if (userResponse.isSuccessful()) {
-              User user = userResponse.body();
-
-              Response<List<Post>> timelineResponse = service.getPosts(req.param("username").value()).execute();
-              List<Post> posts = new ArrayList<>();
-              if (timelineResponse.isSuccessful()) {
-                  posts = timelineResponse.body();
-              }
-              return views.home.template(user, posts, new ArrayList<User>());
-          } else {
-              throw new Err(Status.BAD_REQUEST);
-          }
-      });
-
-      get("/{username}/following/", req -> {
+      get("/user/{username}/following/", req -> {
           Response<User> userResponse = service.getProfile(req.param("username").value()).execute();
           if (userResponse.isSuccessful()) {
               User user = userResponse.body();
@@ -120,7 +104,7 @@ public class App extends Jooby {
           }
       });
 
-      get("/{username}/followers/", req -> {
+      get("/user/{username}/followers/", req -> {
           Response<User> userResponse = service.getProfile(req.param("username").value()).execute();
           if (userResponse.isSuccessful()) {
               User user = userResponse.body();
@@ -131,6 +115,22 @@ public class App extends Jooby {
                   users = usersResponse.body();
               }
               return views.users.template(user, users);
+          } else {
+              throw new Err(Status.BAD_REQUEST);
+          }
+      });
+
+      get("/user/{username}", req -> {
+          Response<User> userResponse = service.getProfile(req.param("username").value()).execute();
+          if (userResponse.isSuccessful()) {
+              User user = userResponse.body();
+
+              Response<List<Post>> timelineResponse = service.getPosts(req.param("username").value()).execute();
+              List<Post> posts = new ArrayList<>();
+              if (timelineResponse.isSuccessful()) {
+                  posts = timelineResponse.body();
+              }
+              return views.home.template(user, posts, new ArrayList<User>());
           } else {
               throw new Err(Status.BAD_REQUEST);
           }
