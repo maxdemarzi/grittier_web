@@ -120,6 +120,22 @@ public class App extends Jooby {
           }
       });
 
+      get("/user/{username}/likes", req -> {
+          Response<User> userResponse = service.getProfile(req.param("username").value()).execute();
+          if (userResponse.isSuccessful()) {
+              User user = userResponse.body();
+
+              Response<List<Post>> timelineResponse = service.getLikes(req.param("username").value()).execute();
+              List<Post> posts = new ArrayList<>();
+              if (timelineResponse.isSuccessful()) {
+                  posts = timelineResponse.body();
+              }
+              return views.home.template(user, posts, new ArrayList<User>());
+          } else {
+              throw new Err(Status.BAD_REQUEST);
+          }
+      });
+
       get("/user/{username}", req -> {
           Response<User> userResponse = service.getProfile(req.param("username").value()).execute();
           if (userResponse.isSuccessful()) {
@@ -185,6 +201,32 @@ public class App extends Jooby {
           }
       }).produces("json");
 
+      post("/like/{username}/{time}", req -> {
+          Response<Post> response = service.createLikes(req.get("username"), req.param("username").value(), req.param("time").longValue()).execute();
+          if (response.isSuccessful()) {
+              return response.body();
+          } else {
+              throw new Err(Status.BAD_REQUEST);
+          }
+      }).produces("json");
+
+      post("/post/{username}/{time}", req -> {
+          Response<Post> response = service.createRePost(req.get("username"), req.param("username").value(), req.param("time").longValue()).execute();
+          if (response.isSuccessful()) {
+              return response.body();
+          } else {
+              throw new Err(Status.BAD_REQUEST);
+          }
+      }).produces("json");
+
+      post("/follow/{username}", req -> {
+          Response<User> response = service.createFollows(req.get("username"), req.param("username").value()).execute();
+          if (response.isSuccessful()) {
+              return response.body();
+          } else {
+              throw new Err(Status.BAD_REQUEST);
+          }
+      }).produces("json");
   }
 
   public static void main(final String[] args) {

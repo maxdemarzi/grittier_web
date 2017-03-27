@@ -39,8 +39,7 @@ public interface GritterService {
                           @Path("username") String username);
 
     @POST("users/{username}/posts/{username2}/{time}")
-    Call<Post> createRePost(@Body Post post,
-                            @Path("username") String username,
+    Call<Post> createRePost(@Path("username") String username,
                             @Path("username2") String username2,
                             @Path("time") Long time);
 
@@ -48,8 +47,7 @@ public interface GritterService {
     Call<List<Post>> getLikes(@Path("username") String username);
 
     @POST("users/{username}/likes/{username2}/{time}")
-    Call<Post> createLikes(@Body Post post,
-                            @Path("username") String username,
+    Call<Post> createLikes(@Path("username") String username,
                             @Path("username2") String username2,
                             @Path("time") Long time);
 
