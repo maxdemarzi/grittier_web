@@ -1,0 +1,75 @@
+@import java.util.List
+@import com.maxdemarzi.models.User
+@import com.maxdemarzi.models.Post
+
+@args (User user, List<Post> posts)
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Grittier User Page</title>
+    <link rel="stylesheet" href="/assets/grittier.css">
+</head>
+<body>
+<div class="container">
+    <a href="/"><h1>Gritter</h1></a>
+</div>
+<div class="container">
+    <div class="column-center">
+        <div class="box">
+            <table width="100%">
+                <tr>
+                    <td><span class="small"><a href="/user/@user.getUsername()">Posts</a></span></td>
+                    <td><span class="small"><a href="/user/@user.getUsername()/following">Following</a></span></td>
+                    <td><span class="small"><a href="/user/@user.getUsername()/followers">Followers</a></span></td>
+                    <td><span class="small"><a href="/user/@user.getUsername()/likes">Likes</a></span></td>
+                </tr>
+                <tr>
+                    <td><a href="/user/@user.getUsername()">@user.getPosts()</a></td>
+                    <td><a href="/user/@user.getUsername()/following">@user.getFollowing()</a></td>
+                    <td><a href="/user/@user.getUsername()/followers">@user.getFollowers()</a></td>
+                    <td><a href="/user/@user.getUsername()/likes">@user.getLikes()</a></td>
+                </tr>
+            </table>
+        </div>
+        <div class="timeline">
+            @for (it: posts) {
+            <div class="box">
+                <img src="https://www.gravatar.com/avatar/{{hash}}?s=72&d=retro"/>
+                @it.getName() @@ @it.getUsername() - @it.humanTime()<br>
+                @it.getStatus()<br>
+                <span class="post"><a href="/post/@it.getUsername()/@it.getTime()"><img src="/assets/img/1f501.png" height="16" width="16"> @it.getReposts()</a> <a href="/like/@it.getUsername()/@it.getTime()"><img src="/assets/img/1f497.png" height="16" width="16"> @it.getLikes()</a></span>
+            </div>
+            }
+        </div>
+    </div>
+    <div class="column-left">
+        <div class="box">
+            <img style="float:none;" src="https://www.gravatar.com/avatar/@user.getHash()?s=200&d=retro"/>
+            <br>
+            @user.getName() <br>
+            <a href="/user/@user.getUsername()" style="font-size:small;">@@ @user.getUsername()</a><br>
+
+        </div>
+    </div>
+    <div class="column-right">
+        <div class="box">
+            @user
+            @if (user.getI_follow() != null) {
+                @if (user.getI_follow()) {
+                    <form id="unfollow" action="/follow/@user.getUsername()" method="delete">
+                        <input type="submit" value="Unfollow" />
+                    </form>
+                } else {
+                    <form id="follow" action="/follow/@user.getUsername()" method="post">
+                        <input type="submit" value="Follow" />
+                    </form>
+                }
+            }
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

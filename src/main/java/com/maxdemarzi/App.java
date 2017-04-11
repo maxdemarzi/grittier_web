@@ -6,10 +6,7 @@ import okhttp3.Credentials;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import org.jooby.Err;
-import org.jooby.Jooby;
-import org.jooby.Results;
-import org.jooby.Status;
+import org.jooby.*;
 import org.jooby.json.Jackson;
 import org.jooby.pac4j.Auth;
 import org.jooby.rocker.Rockerby;
@@ -88,8 +85,10 @@ public class App extends Jooby {
           }
       });
 
+
       get("/user/{username}/following/", req -> {
-          Response<User> userResponse = service.getProfile(req.param("username").value()).execute();
+          String id = req.session().get("id").value(null);
+          Response<User> userResponse = service.getProfile(req.param("username").value(), id).execute();
           if (userResponse.isSuccessful()) {
               User user = userResponse.body();
 
@@ -105,7 +104,8 @@ public class App extends Jooby {
       });
 
       get("/user/{username}/followers/", req -> {
-          Response<User> userResponse = service.getProfile(req.param("username").value()).execute();
+          String id = req.session().get("id").value(null);
+          Response<User> userResponse = service.getProfile(req.param("username").value(), id).execute();
           if (userResponse.isSuccessful()) {
               User user = userResponse.body();
 
@@ -121,7 +121,8 @@ public class App extends Jooby {
       });
 
       get("/user/{username}/likes", req -> {
-          Response<User> userResponse = service.getProfile(req.param("username").value()).execute();
+          String id = req.session().get("id").value(null);
+          Response<User> userResponse = service.getProfile(req.param("username").value(), id).execute();
           if (userResponse.isSuccessful()) {
               User user = userResponse.body();
 
@@ -137,7 +138,8 @@ public class App extends Jooby {
       });
 
       get("/user/{username}", req -> {
-          Response<User> userResponse = service.getProfile(req.param("username").value()).execute();
+          String id = req.session().get("id").value(null);
+          Response<User> userResponse = service.getProfile(req.param("username").value(), id).execute();
           if (userResponse.isSuccessful()) {
               User user = userResponse.body();
 
@@ -146,7 +148,7 @@ public class App extends Jooby {
               if (timelineResponse.isSuccessful()) {
                   posts = timelineResponse.body();
               }
-              return views.home.template(user, posts, new ArrayList<User>());
+              return views.user.template(user, posts);
           } else {
               throw new Err(Status.BAD_REQUEST);
           }
@@ -154,31 +156,32 @@ public class App extends Jooby {
 
       use(new Auth().form("*", ServiceAuthenticator.class));
 
+
       // Set the username.
       get("*", (req, rsp, chain) -> {
           UserProfile profile = require(UserProfile.class);
-          req.set("username", profile.getId());
+          req.set("id", profile.getId());
           chain.next(req, rsp);
       });
 
       post("*", (req, rsp, chain) -> {
           UserProfile profile = require(UserProfile.class);
-          req.set("username", profile.getId());
+          req.set("id", profile.getId());
           chain.next(req, rsp);
       });
 
       get("/home", req -> {
-          Response<User> userResponse = service.getProfile(req.get("username")).execute();
+          Response<User> userResponse = service.getProfile(req.get("id"), null).execute();
           if (userResponse.isSuccessful()) {
               User user = userResponse.body();
 
-              Response<List<Post>> timelineResponse = service.getTimeline(req.get("username")).execute();
+              Response<List<Post>> timelineResponse = service.getTimeline(req.get("id")).execute();
               List<Post> posts = new ArrayList<>();
               if (timelineResponse.isSuccessful()) {
                   posts = timelineResponse.body();
               }
 
-              Response<List<User>> recommendationsResponse = service.recommendFollows(req.get("username")).execute();
+              Response<List<User>> recommendationsResponse = service.recommendFollows(req.get("id")).execute();
               List<User> recommendations = new ArrayList<>();
               if(recommendationsResponse.isSuccessful()) {
                   recommendations = recommendationsResponse.body();
@@ -193,7 +196,7 @@ public class App extends Jooby {
 
       post("/post", req -> {
           Post post = req.form(Post.class);
-          Response<Post> response = service.createPost(post, req.get("username")).execute();
+          Response<Post> response = service.createPost(post, req.get("id")).execute();
           if (response.isSuccessful()) {
               return response.body();
           } else {
@@ -202,7 +205,7 @@ public class App extends Jooby {
       }).produces("json");
 
       post("/like/{username}/{time}", req -> {
-          Response<Post> response = service.createLikes(req.get("username"), req.param("username").value(), req.param("time").longValue()).execute();
+          Response<Post> response = service.createLikes(req.get("id"), req.param("username").value(), req.param("time").longValue()).execute();
           if (response.isSuccessful()) {
               return response.body();
           } else {
@@ -211,7 +214,7 @@ public class App extends Jooby {
       }).produces("json");
 
       post("/post/{username}/{time}", req -> {
-          Response<Post> response = service.createRePost(req.get("username"), req.param("username").value(), req.param("time").longValue()).execute();
+          Response<Post> response = service.createRePost(req.get("id"), req.param("username").value(), req.param("time").longValue()).execute();
           if (response.isSuccessful()) {
               return response.body();
           } else {
@@ -220,7 +223,16 @@ public class App extends Jooby {
       }).produces("json");
 
       post("/follow/{username}", req -> {
-          Response<User> response = service.createFollows(req.get("username"), req.param("username").value()).execute();
+          Response<User> response = service.createFollows(req.get("id"), req.param("username").value()).execute();
+          if (response.isSuccessful()) {
+              return response.body();
+          } else {
+              throw new Err(Status.BAD_REQUEST);
+          }
+      }).produces("json");
+
+      delete("/follow/{username}", req -> {
+          Response<User> response = service.removeFollows(req.get("id"), req.param("username").value()).execute();
           if (response.isSuccessful()) {
               return response.body();
           } else {

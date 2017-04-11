@@ -17,14 +17,14 @@
 </div>
 <div class="container">
     <div class="column-center">
-        <form name="status" action="/post" method="post">
+        <form id="status" action="/post" method="post">
             <textarea name="status" maxlength="140"  rows="2" cols="80" placeholder="What's happening?" autofocus></textarea>
             <input type="submit" value="Submit">
         </form>
         <div class="timeline">
             @for (it: posts) {
             <div class="box">
-                <img src="https://www.gravatar.com/avatar/{{hash}}?s=72&d=retro"/>
+                <img src="https://www.gravatar.com/avatar/@it.getHash()?s=72&d=retro"/>
                 @it.getName() @@ @it.getUsername() - @it.humanTime()<br>
                 @it.getStatus()<br>
                 <span class="post"><a href="/post/@it.getUsername()/@it.getTime()"><img src="/assets/img/1f501.png" height="16" width="16"> @it.getReposts()</a> <a href="/like/@it.getUsername()/@it.getTime()"><img src="/assets/img/1f497.png" height="16" width="16"> @it.getLikes()</a></span>

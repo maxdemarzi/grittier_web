@@ -17,6 +17,8 @@ public class Post {
     private Integer reposts;
     private String reposter_name;
     private String reposter_username;
+    private boolean liked;
+    private boolean reposted;
 
     public String humanTime() {
         return Humanize.naturalTime(new Date(time * 1000));
