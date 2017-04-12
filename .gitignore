@@ -1,3 +1,5 @@
+nofile
+log
 *.iml
 .idea
 target

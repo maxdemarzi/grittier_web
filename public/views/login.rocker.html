@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Grittier Registration</title>
+    <title>Grittier Login</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
     <link href="/assets/login.css" rel="stylesheet">
     <link rel="apple-touch-icon" sizes="57x57" href="/assets/ico/apple-icon-57x57.png">
@@ -21,12 +21,12 @@
     <link rel="manifest" href="/assets/ico/manifest.json">
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="msapplication-TileImage" content="/assets/ico/ms-icon-144x144.png">
-    <meta name="theme-color" content="#ffffff"></head>
+    <meta name="theme-color" content="#ffffff">
+</head>
 <body>
-
 <div class="container">
     <nav class="navbar navbar-toggleable-md navbar-light justify-content-center">
-        <ul class="nav ">
+        <ul class="nav">
             <li class="nav-item">
                 <a class="navbar-brand" href="/">
                     <img src="/assets/img/grittier-solid.svg" width="30" height="30" alt="">
@@ -42,36 +42,25 @@
         <div class="col-6 offset-3">
             <div class="card">
                 <div class="card-block">
-                    <form class="form-signin" action=/register method="post">
-                        <h2 class="form-signin-heading">Please Register</h2>
-                        <div class="form-group row">
-                            <label for="name" class="col-3 col-form-label">Name:</label>
-                            <div class="col-9">
-                                <input type="text" name="name" id="name" class="form-control" required autofocus autocomplete="off">
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="email" class="col-3 col-form-label">Email:</label>
-                            <div class="col-9">
-                                <input type="email" name="email" id="email" class="form-control" required autocomplete="off">
-                            </div>
-                        </div>
+                    <form class="form-signin" action="/auth?client_name=FormClient" method="POST">
+                        <h2 class="form-signin-heading">Please Log In</h2>
                         <div class="form-group row">
                             <label for="username" class="col-3 col-form-label">Username:</label>
                             <div class="col-9">
-                                <input type="text" name="username" id="username" class="form-control" required autocomplete="off">
+                                <input type="text" name="username" id="username" class="form-control" autofocus>
                             </div>
                         </div>
                         <div class="form-group row">
                             <label for="password" class="col-3 col-form-label">Password:</label>
                             <div class="col-9">
-                                <input type="password" name="password" id="password" class="form-control" required autocomplete="off">
+                                <input type="password" name="password" id="password" class="form-control">
                             </div>
                         </div>
-                        <button class="btn btn btn-primary" type="submit">Register</button>
-                        <a href="/login" class="btn btn btn-secondary" type="">Log In</a>
+
+                        <button class="btn btn btn-primary" type="submit">Log In</button>
+                        <a href="/register" class="btn btn btn-secondary">Register</a>
                     </form>
-                </div>
+                 </div>
             </div>
         </div>
     </div>

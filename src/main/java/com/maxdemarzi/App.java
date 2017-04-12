@@ -21,6 +21,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 import views.index;
+import views.login;
 import views.register;
 
 import java.util.ArrayList;
@@ -75,7 +76,7 @@ public class App extends Jooby {
       assets("/assets/**");
 
       get("/", index::template);
-      //get("/login", login::template);
+      get("/login", login::template);
       get("/register", register::template);
       post("/register", (req, rsp) -> {
           User user = req.form(User.class);
