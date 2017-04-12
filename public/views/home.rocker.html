@@ -9,61 +9,139 @@
 <head>
     <meta charset="UTF-8">
     <title>Grittier Home</title>
-    <link rel="stylesheet" href="/assets/grittier.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/ico/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/ico/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/ico/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/ico/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/ico/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/ico/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/ico/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/ico/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/ico/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/assets/ico/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/ico/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/ico/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/ico/favicon-16x16.png">
+    <link rel="manifest" href="/assets/ico/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/assets/ico/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
 </head>
 <body>
-<div class="container">
-    <a href="/"><h1>Gritter</h1></a>
-</div>
-<div class="container">
-    <div class="column-center">
-        <form id="status" action="/post" method="post">
-            <textarea name="status" maxlength="140"  rows="2" cols="80" placeholder="What's happening?" autofocus></textarea>
-            <input type="submit" value="Submit">
-        </form>
-        <div class="timeline">
-            @for (it: posts) {
-            <div class="box">
-                <img src="https://www.gravatar.com/avatar/@it.getHash()?s=72&d=retro"/>
-                @it.getName() @@ @it.getUsername() - @it.humanTime()<br>
-                @it.getStatus()<br>
-                <span class="post"><a href="/post/@it.getUsername()/@it.getTime()"><img src="/assets/img/1f501.png" height="16" width="16"> @it.getReposts()</a> <a href="/like/@it.getUsername()/@it.getTime()"><img src="/assets/img/1f497.png" height="16" width="16"> @it.getLikes()</a></span>
-            </div>
-            }
-        </div>
+<div class="container-fluid">
+<nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand" href="#">
+        <img src="/assets/img/grittier-solid.svg" width="30" height="30" alt="">
+        Grittier
+    </a>
 
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="/home">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/explore">Explore</a>
+            </li>
+        </ul>
+
+        <form class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="text" placeholder="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form>
+        <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <img src="https://www.gravatar.com/avatar/@user.getHash()?s=32&d=retro" class="rounded-circle" />
+                    @user.getUsername()
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    <a class="dropdown-item" href="/user/@user.getUsername()">View Profile</a>
+                    <a class="dropdown-item" href="/user/@user.getUsername()/following">Following</a>
+                    <a class="dropdown-item" href="/user/@user.getUsername()/followers">Followers</a>
+                    <a class="dropdown-item" href="/logout">Log out</a>
+                </div>
+            </li>
+        </ul>
     </div>
-    <div class="column-left">
-        <div class="box">
-            <img src="https://www.gravatar.com/avatar/@user.getHash()?s=72&d=retro"/>
-            @user.getName() <br>
-            <a href="/user/@user.getUsername()" style="font-size:small;">@user.getUsername()</a><br>
-            <table width="100%">
-                <tr>
-                    <td><span class="small"><a href="/user/@user.getUsername()">Posts</a></span></td>
-                    <td><span class="small"><a href="/user/@user.getUsername()/following">Following</a></span></td>
-                    <td><span class="small"><a href="/user/@user.getUsername()/followers">Followers</a></span></td>
-                </tr>
-                <tr>
-                    <td><a href="/user/@user.getUsername()">@user.getPosts()</a></td>
-                    <td><a href="/user/@user.getUsername()/following">@user.getFollowing()</a></td>
-                    <td><a href="/user/@user.getUsername()/followers">@user.getFollowers()</a></td>
-                </tr>
-            </table>
+</nav>
+</div>
+<br/>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-3">
+            <div class="card">
+                <img class="card-img-top" src="/assets/img/card-top.png" height="85" alt="Card image cap">
+                <div class="card-block">
+                    <h4>
+                        <img src="https://www.gravatar.com/avatar/@user.getHash()?s=72&d=retro" class="rounded" />
+                        @user.getName() <br>
+                    </h4>
+                    <a href="/user/@user.getUsername()" style="font-size:small;">@user.getUsername()</a><br>
+                    <table width="100%">
+                        <tr>
+                            <td><span class="small"><a href="/user/@user.getUsername()">Posts</a></span></td>
+                            <td><span class="small"><a href="/user/@user.getUsername()/following">Following</a></span></td>
+                            <td><span class="small"><a href="/user/@user.getUsername()/followers">Followers</a></span></td>
+                        </tr>
+                        <tr>
+                            <td><a href="/user/@user.getUsername()">@user.getPosts()</a></td>
+                            <td><a href="/user/@user.getUsername()/following">@user.getFollowing()</a></td>
+                            <td><a href="/user/@user.getUsername()/followers">@user.getFollowers()</a></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="column-right">
-        <div class="box"><h3>Who to follow</h3>
-            @for (it: recommendations) {
-            <img src="https://www.gravatar.com/avatar/@it.getHash()?s=72&d=retro"/>
-            @it.getName() <br>
-            <a href="/user/@it.getUsername()" style="font-size:small;">@@ @it.getUsername()</a><br>
-            }
-            <br>
+        <div class="col-6">
+            <div class="card">
+                <div class="card-block">
+
+                        <form id="status" action="/post" method="post">
+                        <div class="input-group card-outline-info">
+                            <input name="status" type="text" class="form-control" placeholder="What's happening?" autofocus>
+                            <span class="input-group-btn">
+                                <button class="btn btn-secondary" type="button">Post</button>
+                            </span>
+                        </div>
+                        </form>
+                        <br/>
+                        @for (it: posts) {
+                        <div class="card">
+                            <div class="card-block">
+                                <img src="https://www.gravatar.com/avatar/@it.getHash()?s=48&d=retro" class="rounded" />
+                                @it.getName() @@ @it.getUsername() - @it.humanTime()<br>
+                                @it.getStatus()<br>
+                                <span class="post"><a href="/post/@it.getUsername()/@it.getTime()"><img src="/assets/img/1f501.png" height="16" width="16"> @it.getReposts()</a> <a href="/like/@it.getUsername()/@it.getTime()"><img src="/assets/img/1f497.png" height="16" width="16"> @it.getLikes()</a></span>
+                            </div>
+                        </div>
+                        }
+
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card">
+                <div class="card-block">
+                    <h4>Who to follow</h4>
+                    @for (it: recommendations) {
+                    <img src="https://www.gravatar.com/avatar/@it.getHash()?s=72&d=retro"/>
+                    @it.getName() <br>
+                    <a href="/user/@it.getUsername()" style="font-size:small;">@@ @it.getUsername()</a><br>
+                    }
+                </div>
+            </div>
         </div>
     </div>
 </div>
-<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+
+<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
 <script src="/assets/grittier.js"></script>
 </body>
 </html>
