@@ -2,11 +2,15 @@ package com.maxdemarzi;
 
 import com.maxdemarzi.models.Post;
 import com.maxdemarzi.models.User;
+import com.typesafe.config.Config;
 import okhttp3.Credentials;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import org.jooby.*;
+import org.jooby.Err;
+import org.jooby.Jooby;
+import org.jooby.Results;
+import org.jooby.Status;
 import org.jooby.json.Jackson;
 import org.jooby.pac4j.Auth;
 import org.jooby.rocker.Rockerby;
@@ -17,9 +21,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 import views.index;
-import views.privacy;
+import views.login;
 import views.register;
-import views.terms;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,8 +48,11 @@ public class App extends Jooby {
 
       // Setup Service
       onStart(registry -> {
+
+          Config conf = require(Config.class);
+
           // Define the interceptor, add authentication headers
-          String credentials = Credentials.basic("neo4j", "swordfish");
+          String credentials = Credentials.basic(conf.getString("neo4j.username"), conf.getString("neo4j.password"));
           Interceptor interceptor = chain -> {
               Request newRequest = chain.request().newBuilder().addHeader("Authorization", credentials).build();
               return chain.proceed(newRequest);
@@ -59,7 +65,7 @@ public class App extends Jooby {
 
           Retrofit retrofit = new Retrofit.Builder()
                   .client(client)
-                  .baseUrl("http://localhost:7474/v1/")
+                  .baseUrl("http://" + conf.getString("neo4j.url") + conf.getString("neo4j.prefix") +  "/")
                   .addConverterFactory(JacksonConverterFactory.create())
                   .build();
 
@@ -71,8 +77,7 @@ public class App extends Jooby {
       assets("/favicon.ico", "/assets/favicon.ico");
 
       get("/", index::template);
-      get("/privacy", privacy::template);
-      get("/terms", terms::template);
+      get("/login", login::template);
       get("/register", register::template);
       post("/register", (req, rsp) -> {
           User user = req.form(User.class);
@@ -81,7 +86,7 @@ public class App extends Jooby {
           if (response.isSuccessful()) {
               Results.redirect("/login");
           } else {
-              throw new Err(Status.CONFLICT, "User already registered.");
+              throw new Err(Status.CONFLICT, "There was a problem with your registration.");
           }
       });
 

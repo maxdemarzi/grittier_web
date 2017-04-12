@@ -150,6 +150,7 @@
                 <vmArgs></vmArgs>
                 <debug>true</debug>
                 <includes>
+                    <include>**/*.rocker.html</include>
                     <include>**/*.class</include>
                     <include>**/*.conf</include>
                     <include>**/*.properties</include>
