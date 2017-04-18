@@ -1,6 +1,7 @@
 package com.maxdemarzi;
 
 import com.maxdemarzi.models.Post;
+import com.maxdemarzi.models.Tag;
 import com.maxdemarzi.models.User;
 import retrofit2.Call;
 import retrofit2.http.*;
@@ -84,6 +85,15 @@ public interface GritterService {
     @GET("users/{username}/recommendations/follows")
     Call<List<User>> recommendFollows(@Path("username") String username);
 
+    @GET("tags")
+    Call<List<Tag>> getTags();
+
     @GET("tags/{tag}")
-    Call<List<Post>> getTag(@Path("tag") String tag);
+    Call<List<Post>> getTag(@Path("tag") String tag,
+                            @Query("username") String username);
+
+    @GET("search")
+    Call<List<Post>> getSearch(@Query("q") String q,
+                               @Query("username") String username);
+
 }

@@ -1,6 +1,7 @@
 package com.maxdemarzi;
 
 import com.maxdemarzi.models.Post;
+import com.maxdemarzi.models.Tag;
 import com.maxdemarzi.models.User;
 import com.typesafe.config.Config;
 import okhttp3.Credentials;
@@ -27,6 +28,8 @@ import views.register;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
+
+import static java.lang.Thread.sleep;
 
 /**
  * @author jooby generator
@@ -74,6 +77,7 @@ public class App extends Jooby {
 
       // Configure public static files
       assets("/assets/**");
+      assets("/favicon.ico", "/assets/favicon.ico");
 
       get("/", index::template);
       get("/login", login::template);
@@ -101,7 +105,7 @@ public class App extends Jooby {
               if (usersResponse.isSuccessful()) {
                   users = usersResponse.body();
               }
-              return  views.users.template(user, users);
+              return  views.users.template(user, users, getUsersToFollow(id), getTags());
           } else {
               throw new Err(Status.BAD_REQUEST);
           }
@@ -118,7 +122,8 @@ public class App extends Jooby {
               if (usersResponse.isSuccessful()) {
                   users = usersResponse.body();
               }
-              return views.users.template(user, users);
+
+              return views.users.template(user, users, getUsersToFollow(id), getTags());
           } else {
               throw new Err(Status.BAD_REQUEST);
           }
@@ -135,7 +140,7 @@ public class App extends Jooby {
               if (timelineResponse.isSuccessful()) {
                   posts = timelineResponse.body();
               }
-              return views.home.template(user, posts, new ArrayList<User>());
+              return views.home.template(user, posts, getUsersToFollow(id), getTags());
           } else {
               throw new Err(Status.BAD_REQUEST);
           }
@@ -152,9 +157,66 @@ public class App extends Jooby {
               if (timelineResponse.isSuccessful()) {
                   posts = timelineResponse.body();
               }
-              return views.user.template(user, posts);
+
+              return views.user.template(user, posts, getUsersToFollow(id), getTags());
           } else {
               throw new Err(Status.BAD_REQUEST);
+          }
+      });
+
+      get("/tag/{hashtag}", req -> {
+          String id = req.session().get("id").value(null);
+          if (id != null) {
+              Response<User> userResponse = service.getProfile(id, null).execute();
+              if (userResponse.isSuccessful()) {
+                  User user = userResponse.body();
+
+                  Response<List<Post>> tagResponse = service.getTag(req.param("hashtag").value(), id).execute();
+                  List<Post> posts = new ArrayList<>();
+                  if (tagResponse.isSuccessful()) {
+                      posts = tagResponse.body();
+                  }
+
+                  return views.home.template(user, posts, getUsersToFollow(id), getTags());
+              } else {
+                  throw new Err(Status.BAD_REQUEST);
+              }
+          } else {
+              Response<List<Post>> tagResponse = service.getTag(req.param("q").value(), null).execute();
+              List<Post> posts = new ArrayList<>();
+              if (tagResponse.isSuccessful()) {
+                  posts = tagResponse.body();
+              }
+
+              return views.home.template(null, posts, getUsersToFollow(id), getTags());
+          }
+      });
+
+      post("/search", req -> {
+          String id = req.session().get("id").value(null);
+          if (id != null) {
+              Response<User> userResponse = service.getProfile(id, null).execute();
+              if (userResponse.isSuccessful()) {
+                  User user = userResponse.body();
+
+                  Response<List<Post>> searchResponse = service.getSearch(req.param("q").value(), id).execute();
+                  List<Post> posts = new ArrayList<>();
+                  if (searchResponse.isSuccessful()) {
+                      posts = searchResponse.body();
+                  }
+
+                  return views.home.template(user, posts, getUsersToFollow(id), getTags());
+              } else {
+                  throw new Err(Status.BAD_REQUEST);
+              }
+          } else {
+              Response<List<Post>> searchResponse = service.getSearch(req.param("q").value(), null).execute();
+              List<Post> posts = new ArrayList<>();
+              if (searchResponse.isSuccessful()) {
+                  posts = searchResponse.body();
+              }
+
+              return views.home.template(null, posts, getUsersToFollow(id), getTags());
           }
       });
 
@@ -185,28 +247,22 @@ public class App extends Jooby {
                   posts = timelineResponse.body();
               }
 
-              Response<List<User>> recommendationsResponse = service.recommendFollows(req.get("id")).execute();
-              List<User> recommendations = new ArrayList<>();
-              if(recommendationsResponse.isSuccessful()) {
-                  recommendations = recommendationsResponse.body();
-              }
-
-              return views.home.template(user, posts, recommendations);
+              return views.home.template(user, posts,  getUsersToFollow(req.get("id")), getTags());
           } else {
               throw new Err(Status.BAD_REQUEST);
           }
-
       });
 
       post("/post", req -> {
           Post post = req.form(Post.class);
           Response<Post> response = service.createPost(post, req.get("id")).execute();
           if (response.isSuccessful()) {
-              return response.body();
+              sleep(1000);
+              return Results.redirect("/home");
           } else {
               throw new Err(Status.BAD_REQUEST);
           }
-      }).produces("json");
+      });
 
       post("/like/{username}/{time}", req -> {
           Response<Post> response = service.createLikes(req.get("id"), req.param("username").value(), req.param("time").longValue()).execute();
@@ -245,7 +301,27 @@ public class App extends Jooby {
       }).produces("json");
   }
 
-  public static void main(final String[] args) {
+    private List<User> getUsersToFollow(String id) throws java.io.IOException {
+        List<User> recommendations = new ArrayList<>();
+        if (id != null) {
+            Response<List<User>> recommendationsResponse = service.recommendFollows(id).execute();
+            if (recommendationsResponse.isSuccessful()) {
+                recommendations = recommendationsResponse.body();
+            }
+        }
+        return recommendations;
+    }
+
+    private List<Tag> getTags() throws java.io.IOException {
+        List<Tag> trends = new ArrayList<>();
+        Response<List<Tag>> trendsResponce = service.getTags().execute();
+        if (trendsResponce.isSuccessful()) {
+            trends = trendsResponce.body();
+        }
+        return trends;
+    }
+
+    public static void main(final String[] args) {
     run(App::new, args);
   }
 

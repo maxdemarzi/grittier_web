@@ -1,8 +1,9 @@
 @import java.util.List
 @import com.maxdemarzi.models.User
 @import com.maxdemarzi.models.Post
+@import com.maxdemarzi.models.Tag
 
-@args (User user, List<Post> posts, List<User> recommendations)
+@args (User user, List<Post> posts, List<User> recommendations, List<Tag> trends)
 
 <!DOCTYPE html>
 <html lang="en">
@@ -49,8 +50,8 @@
             </li>
         </ul>
 
-        <form class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="text" placeholder="Search">
+        <form class="form-inline my-2 my-lg-0" action="/search?username=@user.getUsername()" method="POST">
+            <input class="form-control mr-sm-2" type="text" placeholder="Search" name="q">
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
         </form>
         <ul class="navbar-nav">
@@ -101,11 +102,11 @@
             <div class="card">
                 <div class="card-block">
 
-                        <form id="status" action="/post" method="post">
+                        <form id="status" action="/post" method="POST">
                         <div class="input-group card-outline-info">
                             <input name="status" type="text" class="form-control" placeholder="What's happening?" autofocus>
                             <span class="input-group-btn">
-                                <button class="btn btn-secondary" type="button">Post</button>
+                                <button class="btn btn-secondary" type="submit">Post</button>
                             </span>
                         </div>
                         </form>
@@ -135,6 +136,16 @@
                     }
                 </div>
             </div>
+            <br/>
+            <div class="card">
+                <div class="card-block">
+                    <h4>Trends</h4>
+                    @for (it: trends) {
+                    <a href="/tag/@it.getName()" style="font-size:small;">#@it.getName()</a> <br>
+                    @it.getCount() Posts<br>
+                    }
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -142,6 +153,5 @@
 <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
-<script src="/assets/grittier.js"></script>
 </body>
 </html>
