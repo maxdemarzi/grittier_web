@@ -1,0 +1,16 @@
+@import java.util.List
+@import com.maxdemarzi.models.User
+
+@args (List<User> recommendations)
+
+
+<div class="card">
+    <div class="card-block">
+        <h4>Who to follow</h4>
+        @for (it: recommendations) {
+        <img src="https://www.gravatar.com/avatar/@it.getHash()?s=72&d=retro"/>
+        @it.getName() <br>
+        <a href="/user/@it.getUsername()" style="font-size:small;">@@ @it.getUsername()</a><br>
+        }
+    </div>
+</div>
