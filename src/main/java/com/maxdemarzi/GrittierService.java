@@ -8,7 +8,7 @@ import retrofit2.http.*;
 
 import java.util.List;
 
-public interface GritterService {
+public interface GrittierService {
 
     @GET("users/{username}")
     Call<User> getUser(@Path("username") String username);
@@ -95,5 +95,8 @@ public interface GritterService {
     @GET("search")
     Call<List<Post>> getSearch(@Query("q") String q,
                                @Query("username") String username);
+
+    @GET("search/latest")
+    Call<List<Post>> getLatest(@Query("username") String username);
 
 }

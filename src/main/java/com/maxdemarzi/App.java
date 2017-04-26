@@ -35,7 +35,7 @@ import static java.lang.Thread.sleep;
  * @author jooby generator
  */
 public class App extends Jooby {
-  public static GritterService service;
+  public static GrittierService service;
 
   {
       // Debug friendly error messages
@@ -72,7 +72,7 @@ public class App extends Jooby {
                   .addConverterFactory(JacksonConverterFactory.create())
                   .build();
 
-          service = retrofit.create(GritterService.class);
+          service = retrofit.create(GrittierService.class);
       });
 
       // Configure public static files
@@ -211,6 +211,34 @@ public class App extends Jooby {
               }
           } else {
               Response<List<Post>> searchResponse = service.getSearch(req.param("q").value(), null).execute();
+              List<Post> posts = new ArrayList<>();
+              if (searchResponse.isSuccessful()) {
+                  posts = searchResponse.body();
+              }
+
+              return views.home.template(null, posts, getUsersToFollow(id), getTags());
+          }
+      });
+
+      get("/explore", req -> {
+          String id = req.session().get("id").value(null);
+          if (id != null) {
+              Response<User> userResponse = service.getProfile(id, null).execute();
+              if (userResponse.isSuccessful()) {
+                  User user = userResponse.body();
+
+                  Response<List<Post>> searchResponse = service.getLatest(id).execute();
+                  List<Post> posts = new ArrayList<>();
+                  if (searchResponse.isSuccessful()) {
+                      posts = searchResponse.body();
+                  }
+
+                  return views.home.template(user, posts, getUsersToFollow(id), getTags());
+              } else {
+                  throw new Err(Status.BAD_REQUEST);
+              }
+          } else {
+              Response<List<Post>> searchResponse = service.getLatest(null).execute();
               List<Post> posts = new ArrayList<>();
               if (searchResponse.isSuccessful()) {
                   posts = searchResponse.body();

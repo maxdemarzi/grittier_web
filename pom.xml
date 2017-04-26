@@ -25,6 +25,8 @@
     <humanize.version>1.2.2</humanize.version>
     <!-- Startup class -->
     <application.class>com.maxdemarzi.App</application.class>
+    <!-- Work around, remove if using Jooby 1.1.1+ -->
+    <rocker.extendsClass>com.fizzed.rocker.runtime.DefaultRockerTemplate</rocker.extendsClass>
   </properties>
 
   <dependencies>

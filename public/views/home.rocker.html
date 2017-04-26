@@ -51,24 +51,30 @@
                     </li>
                 </ul>
 
-                <form class="form-inline my-2 my-lg-0" action="/search?username=@user.getUsername()" method="POST">
+                <form class="form-inline my-2 my-lg-0" action="/search" method="POST">
                     <input class="form-control mr-sm-2" type="text" placeholder="Search Grittier" name="q">
                 </form>
                 <ul class="navbar-nav">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <img src="https://www.gravatar.com/avatar/@user.getHash()?s=32&d=retro" class="rounded-circle" />
-                            @user.getUsername()
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            <a class="dropdown-item" href="/user/@user.getUsername()">View Profile</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="/user/@user.getUsername()/following">Following</a>
-                            <a class="dropdown-item" href="/user/@user.getUsername()/followers">Followers</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="/logout">Log out</a>
-                        </div>
-                    </li>
+                    @if (user != null) {
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <img src="https://www.gravatar.com/avatar/@user.getHash()?s=32&d=retro" class="rounded-circle" />
+                                @user.getUsername()
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <a class="dropdown-item" href="/user/@user.getUsername()">View Profile</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="/user/@user.getUsername()/following">Following</a>
+                                <a class="dropdown-item" href="/user/@user.getUsername()/followers">Followers</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="/logout">Log out</a>
+                            </div>
+                        </li>
+                    } else {
+                        <li><a class="btn btn-primary" href="/login" role="button">Login</a></li>
+                        <li>&nbsp;</li>
+                        <li><a class="btn btn-secondary" href="/register" role="button">Register</a></li>
+                    }
                 </ul>
             </div>
         </div>
@@ -78,29 +84,31 @@
 <div class="container-fluid container pt-5">
     <div class="row">
         <div class="col-3">
-            <div class="card">
-                <img class="card-img-top" src="/assets/img/card-top.png" height="85" alt="Card image cap">
-                <div class="card-block">
-                    <h5>
-                        <img src="https://www.gravatar.com/avatar/@user.getHash()?s=72&d=retro" class="rounded" />
-                        @user.getName() <br>
-                    </h5>
-                    <a href="/user/@user.getUsername()" style="font-size:small;">@user.getUsername()</a><br>
-                    <table width="100%">
-                        <tr>
-                            <td><span class="small"><a href="/user/@user.getUsername()">Posts</a></span></td>
-                            <td><span class="small"><a href="/user/@user.getUsername()/following">Following</a></span></td>
-                            <td><span class="small"><a href="/user/@user.getUsername()/followers">Followers</a></span></td>
-                        </tr>
-                        <tr>
-                            <td><a href="/user/@user.getUsername()">@user.getPosts()</a></td>
-                            <td><a href="/user/@user.getUsername()/following">@user.getFollowing()</a></td>
-                            <td><a href="/user/@user.getUsername()/followers">@user.getFollowers()</a></td>
-                        </tr>
-                    </table>
+            @if (user != null) {
+                <div class="card">
+                    <img class="card-img-top" src="/assets/img/card-top.png" height="85" alt="Card image cap">
+                    <div class="card-block">
+                        <h5>
+                            <img src="https://www.gravatar.com/avatar/@user.getHash()?s=72&d=retro" class="rounded" />
+                            @user.getName() <br>
+                        </h5>
+                        <a href="/user/@user.getUsername()" style="font-size:small;">@user.getUsername()</a><br>
+                        <table width="100%">
+                            <tr>
+                                <td><span class="small"><a href="/user/@user.getUsername()">Posts</a></span></td>
+                                <td><span class="small"><a href="/user/@user.getUsername()/following">Following</a></span></td>
+                                <td><span class="small"><a href="/user/@user.getUsername()/followers">Followers</a></span></td>
+                            </tr>
+                            <tr>
+                                <td><a href="/user/@user.getUsername()">@user.getPosts()</a></td>
+                                <td><a href="/user/@user.getUsername()/following">@user.getFollowing()</a></td>
+                                <td><a href="/user/@user.getUsername()/followers">@user.getFollowers()</a></td>
+                            </tr>
+                        </table>
+                    </div>
                 </div>
-            </div>
-            <br/>
+                <br/>
+            }
             <div class="card">
                 <div class="card-block">
                     <h4>Trends</h4>
