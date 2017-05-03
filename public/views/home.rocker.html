@@ -28,8 +28,8 @@
                             @for (it: posts) {
                             <div class="card">
                                 <div class="card-block">
-                                    <img src="https://www.gravatar.com/avatar/@it.getHash()?s=48&d=retro" class="rounded" />
-                                    @it.getName() @@ @it.getUsername() - @it.humanTime()<br>
+                                    <a href="/user/@it.getUsername()"><img src="https://www.gravatar.com/avatar/@it.getHash()?s=48&d=retro" class="rounded" /></a>
+                                    @it.getName() <a href="/user/@it.getUsername()">@@@it.getUsername()</a> - @it.humanTime()<br>
                                     @it.getStatus()<br>
                                     <span class="post"><a href="/post/@it.getUsername()/@it.getTime()"><img src="/assets/img/1f501.png" height="16" width="16"> @it.getReposts()</a> <a href="/like/@it.getUsername()/@it.getTime()"><img src="/assets/img/1f497.png" height="16" width="16"> @it.getLikes()</a></span>
                                 </div>
