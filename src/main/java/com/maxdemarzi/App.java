@@ -17,7 +17,6 @@ import org.jooby.pac4j.Auth;
 import org.jooby.rocker.Rockerby;
 import org.jooby.whoops.Whoops;
 import org.mindrot.jbcrypt.BCrypt;
-import org.pac4j.core.profile.UserProfile;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
@@ -95,7 +94,9 @@ public class App extends Jooby {
 
 
       get("/user/{username}/following/", req -> {
-          String id = req.session().get("id").value(null);
+          String id = req.session().get(Auth.ID).value(null);
+          User loggedin = getUserProfile(id);
+
           Response<User> userResponse = service.getProfile(req.param("username").value(), id).execute();
           if (userResponse.isSuccessful()) {
               User user = userResponse.body();
@@ -105,14 +106,16 @@ public class App extends Jooby {
               if (usersResponse.isSuccessful()) {
                   users = usersResponse.body();
               }
-              return  views.users.template(user, users, getUsersToFollow(id), getTags());
+              return  views.users.template(loggedin, user, users, getUsersToFollow(id), getTags());
           } else {
               throw new Err(Status.BAD_REQUEST);
           }
       });
 
       get("/user/{username}/followers/", req -> {
-          String id = req.session().get("id").value(null);
+          String id = req.session().get(Auth.ID).value(null);
+          User loggedin = getUserProfile(id);
+
           Response<User> userResponse = service.getProfile(req.param("username").value(), id).execute();
           if (userResponse.isSuccessful()) {
               User user = userResponse.body();
@@ -123,14 +126,16 @@ public class App extends Jooby {
                   users = usersResponse.body();
               }
 
-              return views.users.template(user, users, getUsersToFollow(id), getTags());
+              return views.users.template(loggedin, user, users, getUsersToFollow(id), getTags());
           } else {
               throw new Err(Status.BAD_REQUEST);
           }
       });
 
       get("/user/{username}/likes", req -> {
-          String id = req.session().get("id").value(null);
+          String id = req.session().get(Auth.ID).value(null);
+          User loggedin = getUserProfile(id);
+
           Response<User> userResponse = service.getProfile(req.param("username").value(), id).execute();
           if (userResponse.isSuccessful()) {
               User user = userResponse.body();
@@ -140,14 +145,16 @@ public class App extends Jooby {
               if (timelineResponse.isSuccessful()) {
                   posts = timelineResponse.body();
               }
-              return views.home.template(user, posts, getUsersToFollow(id), getTags());
+              return views.home.template(loggedin, user, posts, getUsersToFollow(id), getTags());
           } else {
               throw new Err(Status.BAD_REQUEST);
           }
       });
 
       get("/user/{username}", req -> {
-          String id = req.session().get("id").value(null);
+          String id = req.session().get(Auth.ID).value(null);
+          User loggedin = getUserProfile(id);
+
           Response<User> userResponse = service.getProfile(req.param("username").value(), id).execute();
           if (userResponse.isSuccessful()) {
               User user = userResponse.body();
@@ -158,94 +165,49 @@ public class App extends Jooby {
                   posts = timelineResponse.body();
               }
 
-              return views.user.template(user, posts, getUsersToFollow(id), getTags());
+              return views.user.template(loggedin, user, posts, getUsersToFollow(id), getTags());
           } else {
               throw new Err(Status.BAD_REQUEST);
           }
       });
 
       get("/tag/{hashtag}", req -> {
-          String id = req.session().get("id").value(null);
-          if (id != null) {
-              Response<User> userResponse = service.getProfile(id, null).execute();
-              if (userResponse.isSuccessful()) {
-                  User user = userResponse.body();
+          String id = req.session().get(Auth.ID).value(null);
+          User loggedin = getUserProfile(id);
 
-                  Response<List<Post>> tagResponse = service.getTag(req.param("hashtag").value(), id).execute();
-                  List<Post> posts = new ArrayList<>();
-                  if (tagResponse.isSuccessful()) {
-                      posts = tagResponse.body();
-                  }
-
-                  return views.home.template(user, posts, getUsersToFollow(id), getTags());
-              } else {
-                  throw new Err(Status.BAD_REQUEST);
-              }
-          } else {
-              Response<List<Post>> tagResponse = service.getTag(req.param("q").value(), null).execute();
-              List<Post> posts = new ArrayList<>();
-              if (tagResponse.isSuccessful()) {
-                  posts = tagResponse.body();
-              }
-
-              return views.home.template(null, posts, getUsersToFollow(id), getTags());
+          Response<List<Post>> tagResponse = service.getTag(req.param("hashtag").value(), id).execute();
+          List<Post> posts = new ArrayList<>();
+          if (tagResponse.isSuccessful()) {
+              posts = tagResponse.body();
           }
+          return views.home.template(loggedin, loggedin, posts, getUsersToFollow(id), getTags());
       });
 
       post("/search", req -> {
-          String id = req.session().get("id").value(null);
-          if (id != null) {
-              Response<User> userResponse = service.getProfile(id, null).execute();
-              if (userResponse.isSuccessful()) {
-                  User user = userResponse.body();
+          String id = req.session().get(Auth.ID).value(null);
+          User loggedin = getUserProfile(id);
 
-                  Response<List<Post>> searchResponse = service.getSearch(req.param("q").value(), id).execute();
-                  List<Post> posts = new ArrayList<>();
-                  if (searchResponse.isSuccessful()) {
-                      posts = searchResponse.body();
-                  }
-
-                  return views.home.template(user, posts, getUsersToFollow(id), getTags());
-              } else {
-                  throw new Err(Status.BAD_REQUEST);
-              }
-          } else {
-              Response<List<Post>> searchResponse = service.getSearch(req.param("q").value(), null).execute();
-              List<Post> posts = new ArrayList<>();
-              if (searchResponse.isSuccessful()) {
-                  posts = searchResponse.body();
-              }
-
-              return views.home.template(null, posts, getUsersToFollow(id), getTags());
+          Response<List<Post>> searchResponse = service.getSearch(req.param("q").value(), id).execute();
+          List<Post> posts = new ArrayList<>();
+          if (searchResponse.isSuccessful()) {
+              posts = searchResponse.body();
           }
+
+          return views.home.template(loggedin, loggedin, posts, getUsersToFollow(id), getTags());
       });
 
       get("/explore", req -> {
-          String id = req.session().get("id").value(null);
-          if (id != null) {
-              Response<User> userResponse = service.getProfile(id, null).execute();
-              if (userResponse.isSuccessful()) {
-                  User user = userResponse.body();
+          String id = req.session().get(Auth.ID).value(null);
+          User loggedin = getUserProfile(id);
 
-                  Response<List<Post>> searchResponse = service.getLatest(id).execute();
-                  List<Post> posts = new ArrayList<>();
-                  if (searchResponse.isSuccessful()) {
-                      posts = searchResponse.body();
-                  }
-
-                  return views.home.template(user, posts, getUsersToFollow(id), getTags());
-              } else {
-                  throw new Err(Status.BAD_REQUEST);
-              }
-          } else {
-              Response<List<Post>> searchResponse = service.getLatest(null).execute();
-              List<Post> posts = new ArrayList<>();
-              if (searchResponse.isSuccessful()) {
-                  posts = searchResponse.body();
-              }
-
-              return views.home.template(null, posts, getUsersToFollow(id), getTags());
+          Response<List<Post>> searchResponse = service.getLatest(id).execute();
+          List<Post> posts = new ArrayList<>();
+          if (searchResponse.isSuccessful()) {
+              posts = searchResponse.body();
           }
+
+          return views.home.template(loggedin, loggedin, posts, getUsersToFollow(id), getTags());
+
       });
 
       use(new Auth().form("*", ServiceAuthenticator.class));
@@ -253,32 +215,30 @@ public class App extends Jooby {
 
       // Set the username.
       get("*", (req, rsp, chain) -> {
-          UserProfile profile = require(UserProfile.class);
-          req.set("id", profile.getId());
+          //UserProfile profile = require(UserProfile.class);
+          //req.set("id", profile.getId());
+          req.set("id", req.session().get(Auth.ID).value());
           chain.next(req, rsp);
       });
 
       post("*", (req, rsp, chain) -> {
-          UserProfile profile = require(UserProfile.class);
-          req.set("id", profile.getId());
+//          req.session().get(Auth.ID).toOptional().isPresent();
+//          UserProfile profile = require(UserProfile.class);
+          req.set("id", req.session().get(Auth.ID).value());
           chain.next(req, rsp);
       });
 
       get("/home", req -> {
-          Response<User> userResponse = service.getProfile(req.get("id"), null).execute();
-          if (userResponse.isSuccessful()) {
-              User user = userResponse.body();
+          String id = req.session().get(Auth.ID).value(null);
+          User loggedin = getUserProfile(id);
 
-              Response<List<Post>> timelineResponse = service.getTimeline(req.get("id")).execute();
-              List<Post> posts = new ArrayList<>();
-              if (timelineResponse.isSuccessful()) {
-                  posts = timelineResponse.body();
-              }
-
-              return views.home.template(user, posts,  getUsersToFollow(req.get("id")), getTags());
-          } else {
-              throw new Err(Status.BAD_REQUEST);
+          Response<List<Post>> timelineResponse = service.getTimeline(req.get("id")).execute();
+          List<Post> posts = new ArrayList<>();
+          if (timelineResponse.isSuccessful()) {
+              posts = timelineResponse.body();
           }
+
+          return views.home.template(loggedin, loggedin, posts,  getUsersToFollow(req.get("id")), getTags());
       });
 
       post("/post", req -> {
@@ -328,6 +288,19 @@ public class App extends Jooby {
           }
       }).produces("json");
   }
+
+    private User getUserProfile(String id) throws java.io.IOException {
+        User loggedin = null;
+        if (id != null) {
+            Response<User> userResponse = service.getProfile(id, null).execute();
+            if (userResponse.isSuccessful()) {
+                loggedin = userResponse.body();
+            } else {
+                throw new Err(Status.BAD_REQUEST);
+            }
+        }
+        return loggedin;
+    }
 
     private List<User> getUsersToFollow(String id) throws java.io.IOException {
         List<User> recommendations = new ArrayList<>();

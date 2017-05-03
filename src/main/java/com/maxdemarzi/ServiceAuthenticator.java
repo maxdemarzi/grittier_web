@@ -53,7 +53,6 @@ public class ServiceAuthenticator implements Authenticator<UsernamePasswordCrede
                 profile.addAttribute("name", user.getName());
                 profile.addAttribute("email", user.getEmail());
                 credentials.setUserProfile(profile);
-                webContext.setSessionAttribute("id", username);
             }
         } catch (IOException e) {
             String message = "No account found for: " + username;

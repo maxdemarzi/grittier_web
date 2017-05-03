@@ -3,9 +3,9 @@
 @import com.maxdemarzi.models.Post
 @import com.maxdemarzi.models.Tag
 
-@args (User user, List<User> users, List<User> recommendations, List<Tag> trends)
+@args (User loggedin, User user, List<User> users, List<User> recommendations, List<Tag> trends)
 
-@views.main.template(user.getUsername(), user) -> {
+@views.main.template(user.getUsername(), loggedin) -> {
     <div class="container-fluid pt-5">
         <div class="row">
             <div class="col-12">
