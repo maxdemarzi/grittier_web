@@ -5,24 +5,24 @@
 @if (user != null) {
 <div class="card">
     <img class="card-img-top" src="/assets/img/card-top.png" height="85" alt="Card image cap">
-    <div class="card-block">
-        <h5>
-            <img src="https://www.gravatar.com/avatar/@user.getHash()?s=72&d=retro" class="rounded" />
-            @user.getName() <br>
-        </h5>
-        <a href="/user/@user.getUsername()" style="font-size:small;">@user.getUsername()</a><br>
-        <table width="100%">
-            <tr>
-                <td><span class="small"><a href="/user/@user.getUsername()">Posts</a></span></td>
-                <td><span class="small"><a href="/user/@user.getUsername()/following">Following</a></span></td>
-                <td><span class="small"><a href="/user/@user.getUsername()/followers">Followers</a></span></td>
-            </tr>
-            <tr>
-                <td><a href="/user/@user.getUsername()">@user.getPosts()</a></td>
-                <td><a href="/user/@user.getUsername()/following">@user.getFollowing()</a></td>
-                <td><a href="/user/@user.getUsername()/followers">@user.getFollowers()</a></td>
-            </tr>
-        </table>
+    <div class="card-block p-1">
+        <div class="d-flex flex-row">
+            <div class="p-1"><img src="https://www.gravatar.com/avatar/@user.getHash()?s=72&d=retro" class="rounded" /></div>
+            <div> <h5>@user.getName()</h5>
+                <a href="/user/@user.getUsername()" style="font-size:small;">@@@user.getUsername()</a>
+            </div>
+        </div>
+        <div class="d-flex flex-row">
+            <div class="p-1"><span class="small"><a href="/user/@user.getUsername()">Posts</a></span>
+                <br><a href="/user/@user.getUsername()">@user.getPosts()</a>
+            </div>
+            <div class="p-1"><span class="small"><a href="/user/@user.getUsername()/following">Following</a></span>
+                <br><a href="/user/@user.getUsername()/following">@user.getFollowing()</a>
+            </div>
+            <div class="p-1"><span class="small"><a href="/user/@user.getUsername()/followers">Followers</a></span>
+                <br><a href="/user/@user.getUsername()/followers">@user.getFollowers()</a>
+            </div>
+        </div>
     </div>
 </div>
 <br/>

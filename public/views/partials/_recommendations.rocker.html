@@ -8,9 +8,20 @@
     <div class="card-block">
         <h4>Who to follow</h4>
         @for (it: recommendations) {
-        <img src="https://www.gravatar.com/avatar/@it.getHash()?s=72&d=retro"/>
-        @it.getName() <br>
-        <a href="/user/@it.getUsername()" style="font-size:small;">@@ @it.getUsername()</a><br>
+        <div class="d-flex flex-row">
+            <div class="p-1">
+                <img class="rounded" src="https://www.gravatar.com/avatar/@it.getHash()?s=72&d=retro"/>
+            </div>
+            <div class="p-1">
+                @it.getName() <br>
+                <a href="/user/@it.getUsername()" style="font-size:small;">@@@it.getUsername()</a><br>
+                @if (it.getI_follow() != null) {
+                    <form id="follow" action="/follow/@it.getUsername()" method="post">
+                        <input type="submit" class="btn btn-primary btn-sm" value="Follow" />
+                    </form>
+                </div>
+                }
+        </div>
         }
     </div>
 </div>

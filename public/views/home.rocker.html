@@ -3,9 +3,9 @@
 @import com.maxdemarzi.models.Post
 @import com.maxdemarzi.models.Tag
 
-@args (User loggedin, User user, List<Post> posts, List<User> recommendations, List<Tag> trends)
+@args (User authenticated, User user, List<Post> posts, List<User> recommendations, List<Tag> trends)
 
-@views.main.template("Home", loggedin) -> {
+@views.main.template("Home", authenticated) -> {
 
     <div class="container-fluid container pt-5">
         <div class="row">
@@ -16,7 +16,6 @@
             <div class="col-6">
                 <div class="card">
                     <div class="card-block">
-
                             <form id="status" action="/post" method="POST">
                             <div class="input-group card-outline-info">
                                 <input name="status" type="text" class="form-control" placeholder="What's happening?" autofocus>
@@ -36,7 +35,6 @@
                                 </div>
                             </div>
                             }
-
                     </div>
                 </div>
             </div>
